@@ -1,8 +1,8 @@
-use diesel::{AsChangeset, Insertable, Queryable};
+use diesel::{AsChangeset, Identifiable, Insertable, Queryable};
 
 use crate::{models::cargo_type::Cargotype, schema::cargo_info};
 
-#[derive(Debug, Queryable, Insertable, AsChangeset)]
+#[derive(Debug, Identifiable, Queryable, Insertable, AsChangeset)]
 #[diesel(table_name = cargo_info)]
 pub struct CargoInfo {
     id: i32,

@@ -17,3 +17,17 @@ diesel::table! {
         base_value -> Int4,
     }
 }
+
+diesel::table! {
+    ports (id) {
+        id -> Int4,
+        name -> Varchar,
+        pos_x -> Int4,
+        pos_y -> Int4,
+    }
+}
+
+diesel::allow_tables_to_appear_in_same_query!(
+    cargo_info,
+    ports,
+);
