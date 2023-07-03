@@ -27,7 +27,18 @@ diesel::table! {
     }
 }
 
+diesel::table! {
+    wants_cargo (port_id, cargo_id) {
+        port_id -> Int4,
+        cargo_id -> Int4,
+    }
+}
+
+diesel::joinable!(wants_cargo -> cargo_info (cargo_id));
+diesel::joinable!(wants_cargo -> ports (port_id));
+
 diesel::allow_tables_to_appear_in_same_query!(
     cargo_info,
     ports,
+    wants_cargo,
 );
