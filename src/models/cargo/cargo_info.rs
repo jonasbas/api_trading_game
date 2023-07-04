@@ -1,6 +1,6 @@
 use diesel::prelude::*;
 
-use crate::{models::cargo_type::Cargotype, schema::cargo_info};
+use crate::{models::cargo::cargo_type::Cargotype, schema::cargo_info};
 
 #[derive(Debug, Identifiable, Queryable, Insertable, AsChangeset)]
 #[diesel(table_name = cargo_info)]
