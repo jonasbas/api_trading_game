@@ -1,4 +1,4 @@
-use diesel::{AsChangeset, Identifiable, Insertable, Queryable};
+use diesel::prelude::*;
 
 use crate::{models::cargo_type::Cargotype, schema::cargo_info};
 

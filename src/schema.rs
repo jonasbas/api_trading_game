@@ -19,6 +19,13 @@ diesel::table! {
 }
 
 diesel::table! {
+    crew_members (id) {
+        id -> Int4,
+        name -> Varchar,
+    }
+}
+
+diesel::table! {
     has_cargo (port_id, cargo_id) {
         port_id -> Int4,
         cargo_id -> Int4,
@@ -59,6 +66,7 @@ diesel::joinable!(wants_cargo -> ports (port_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     cargo_info,
+    crew_members,
     has_cargo,
     ports,
     ship_types,

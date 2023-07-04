@@ -1,4 +1,4 @@
-use diesel::{Insertable, Queryable};
+use diesel::prelude::*;
 
 use crate::schema::wants_cargo;
 

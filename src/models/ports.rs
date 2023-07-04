@@ -1,4 +1,4 @@
-use diesel::{AsChangeset, Identifiable, Insertable, Queryable};
+use diesel::prelude::*;
 
 use crate::schema::ports;
 
