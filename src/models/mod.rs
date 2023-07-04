@@ -1,6 +1,8 @@
 mod cargo_info;
 mod cargo_type;
 mod crew_member;
+mod crew_member_skill;
+mod crew_skill;
 mod has_cargo;
 mod ports;
 mod ship_type;

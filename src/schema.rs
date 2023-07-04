@@ -4,6 +4,10 @@ pub mod sql_types {
     #[derive(diesel::query_builder::QueryId, diesel::sql_types::SqlType)]
     #[diesel(postgres_type(name = "cargotype"))]
     pub struct Cargotype;
+
+    #[derive(diesel::query_builder::QueryId, diesel::sql_types::SqlType)]
+    #[diesel(postgres_type(name = "crewskill"))]
+    pub struct Crewskill;
 }
 
 diesel::table! {
@@ -15,6 +19,17 @@ diesel::table! {
         name -> Cargotype,
         weight -> Int4,
         base_value -> Int4,
+    }
+}
+
+diesel::table! {
+    use diesel::sql_types::*;
+    use super::sql_types::Crewskill;
+
+    crew_member_skills (crew_id, skill) {
+        crew_id -> Int4,
+        skill -> Crewskill,
+        value -> Int4,
     }
 }
 
@@ -59,6 +74,7 @@ diesel::table! {
     }
 }
 
+diesel::joinable!(crew_member_skills -> crew_members (crew_id));
 diesel::joinable!(has_cargo -> cargo_info (cargo_id));
 diesel::joinable!(has_cargo -> ports (port_id));
 diesel::joinable!(wants_cargo -> cargo_info (cargo_id));
@@ -66,6 +82,7 @@ diesel::joinable!(wants_cargo -> ports (port_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     cargo_info,
+    crew_member_skills,
     crew_members,
     has_cargo,
     ports,
