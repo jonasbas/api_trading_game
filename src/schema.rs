@@ -35,6 +35,17 @@ diesel::table! {
 }
 
 diesel::table! {
+    ship_types (id) {
+        id -> Int4,
+        name -> Varchar,
+        speed -> Int4,
+        max_cargo_size -> Int4,
+        max_crew_size -> Int4,
+        cost -> Int4,
+    }
+}
+
+diesel::table! {
     wants_cargo (port_id, cargo_id) {
         port_id -> Int4,
         cargo_id -> Int4,
@@ -50,5 +61,6 @@ diesel::allow_tables_to_appear_in_same_query!(
     cargo_info,
     has_cargo,
     ports,
+    ship_types,
     wants_cargo,
 );
