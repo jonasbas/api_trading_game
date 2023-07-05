@@ -41,6 +41,13 @@ diesel::table! {
 }
 
 diesel::table! {
+    crew_to_ship (crew_id, ship_id) {
+        crew_id -> Int4,
+        ship_id -> Int4,
+    }
+}
+
+diesel::table! {
     has_cargo (port_id, cargo_id) {
         port_id -> Int4,
         cargo_id -> Int4,
@@ -105,6 +112,8 @@ diesel::table! {
 }
 
 diesel::joinable!(crew_member_skills -> crew_members (crew_id));
+diesel::joinable!(crew_to_ship -> crew_members (crew_id));
+diesel::joinable!(crew_to_ship -> ships (ship_id));
 diesel::joinable!(has_cargo -> cargo_info (cargo_id));
 diesel::joinable!(has_cargo -> ports (port_id));
 diesel::joinable!(ship_cargo -> cargo_info (cargo_id));
@@ -118,6 +127,7 @@ diesel::allow_tables_to_appear_in_same_query!(
     cargo_info,
     crew_member_skills,
     crew_members,
+    crew_to_ship,
     has_cargo,
     players,
     ports,
