@@ -48,6 +48,16 @@ diesel::table! {
 }
 
 diesel::table! {
+    players (id) {
+        id -> Int4,
+        name -> Varchar,
+        key -> Varchar,
+        money -> Int4,
+        created_at -> Timestamp,
+    }
+}
+
+diesel::table! {
     ports (id) {
         id -> Int4,
         name -> Varchar,
@@ -85,6 +95,7 @@ diesel::allow_tables_to_appear_in_same_query!(
     crew_member_skills,
     crew_members,
     has_cargo,
+    players,
     ports,
     ship_types,
     wants_cargo,
