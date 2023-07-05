@@ -1,6 +1,6 @@
-use api_trading_game::start_server;
+use api_trading_game::bootstrap;
 
 #[tokio::main]
 async fn main() {
-    start_server().await;
+    bootstrap().await;
 }

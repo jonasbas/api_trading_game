@@ -1,16 +1,10 @@
 mod models;
 mod schema;
+mod server;
 
-use axum::{routing::get, Router};
 use dotenv::dotenv;
 
-pub async fn start_server() {
+pub async fn bootstrap() {
     dotenv().ok();
-
-    let app = Router::new().route("/", get(|| async { "Hello world" }));
-
-    axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
+    server::start_server().await;
 }
