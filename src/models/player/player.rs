@@ -10,8 +10,8 @@ use crate::schema::players;
 pub struct Player {
     pub id: i32,
     pub name: String,
-    key: String,
-    money: i32,
+    pub key: String,
+    pub money: i32,
     created_at: SystemTime,
 }
 

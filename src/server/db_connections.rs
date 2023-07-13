@@ -1,7 +1,8 @@
 use std::env;
 
+use axum::http::StatusCode;
 use diesel::{
-    r2d2::{ConnectionManager, Pool},
+    r2d2::{ConnectionManager, Pool, PooledConnection},
     PgConnection,
 };
 
@@ -12,8 +13,18 @@ pub fn create_connection_pool() -> Pool<ConnectionManager<PgConnection>> {
     println!("DB pool initiating");
     Pool::builder()
         .test_on_check_out(true)
-        //TODO: why does it only work if max size is set to 2?
-        .max_size(2)
         .build(manager)
-        .expect("Error creating database connection pool!")
+        .expect("error creating db connection pool")
+}
+
+pub fn get_connection(
+    pool: Pool<ConnectionManager<PgConnection>>,
+) -> Result<PooledConnection<ConnectionManager<PgConnection>>, StatusCode> {
+    let connection = pool.get();
+
+    if connection.is_err() {
+        return Err(StatusCode::INTERNAL_SERVER_ERROR);
+    }
+
+    Ok(connection.unwrap())
 }
