@@ -10,7 +10,7 @@ use rand::{distributions::Alphanumeric, Rng};
 use serde::Deserialize;
 
 use crate::{
-    models::player::player::{CreatedPlayer, Player, PlayerToCreate, PlayerToDisplay},
+    models::player::{CreatedPlayer, Player, PlayerToCreate, PlayerToDisplay},
     server::{db_connections::get_connection, state::ServerState},
 };
 

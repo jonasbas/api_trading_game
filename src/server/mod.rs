@@ -1,4 +1,4 @@
-use std::{print, sync::Arc};
+use std::sync::Arc;
 
 use axum::{
     routing::{get, post},
