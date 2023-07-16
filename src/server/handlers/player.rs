@@ -123,6 +123,7 @@ pub async fn rename_player(
     player.name = body.name;
 
     let update_result: Result<PlayerToDisplay, Error> = diesel::update(players)
+        .filter(id.eq(player.id))
         .set(player)
         .returning(PlayerToDisplay::as_returning())
         .get_result(&mut con);
