@@ -6,6 +6,8 @@ use axum::{
 };
 use tokio::signal;
 
+use crate::server::handlers::ship::list_ship_types;
+
 use self::{
     db_connections::create_connection_pool,
     handlers::player::{create_player, display_player, rename_player},
@@ -21,11 +23,15 @@ pub async fn start_server() {
 
     let server_state = Arc::new(ServerState::new(db_connections));
 
+    let user_routes = Router::new()
+        .route("/create", post(create_player))
+        .route("/:id", get(display_player))
+        .route("/:id/rename", post(rename_player));
+
     let app = Router::new()
         .route("/", get(|| async { "Hello world" }))
-        .route("/player/create", post(create_player))
-        .route("/player/:id", get(display_player))
-        .route("/player/:id/rename", post(rename_player))
+        .route("/ships", get(list_ship_types))
+        .nest("/player", user_routes)
         .with_state(server_state);
 
     println!("Bind server on port 3000.");

@@ -1,8 +1,9 @@
 use diesel::prelude::*;
+use serde::Serialize;
 
 use crate::schema::ship_types;
 
-#[derive(Debug, Insertable, Queryable, Identifiable, AsChangeset)]
+#[derive(Debug, Insertable, Queryable, Identifiable, AsChangeset, Serialize)]
 #[diesel(table_name = ship_types)]
 pub struct ShipType {
     id: i32,

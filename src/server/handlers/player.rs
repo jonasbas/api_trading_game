@@ -14,6 +14,8 @@ use crate::{
     server::{db_connections::get_connection, state::ServerState},
 };
 
+use super::Response;
+
 #[derive(Debug, Deserialize)]
 pub struct PlayerName {
     pub name: String,
@@ -27,7 +29,7 @@ pub struct PlayerName {
 pub async fn create_player(
     State(state): State<Arc<ServerState>>,
     Json(body): Json<PlayerName>,
-) -> (StatusCode, Json<CreatedPlayer>) {
+) -> Response<CreatedPlayer> {
     use crate::schema::players;
 
     let key: String = rand::thread_rng()
@@ -38,25 +40,27 @@ pub async fn create_player(
 
     let player_to_create = PlayerToCreate::new(body.name, key.clone());
 
-    let mut con = state
-        .db_connections
-        .get()
-        .expect("Couldn't get db connection");
+    let mut con = get_connection(state.db_connections.clone())?;
 
-    let created_player: Player = diesel::insert_into(players::table)
+    let created_player: Result<Player, Error> = diesel::insert_into(players::table)
         .values(player_to_create)
         .returning(Player::as_returning())
-        .get_result(&mut con)
-        .expect("Error creating player.");
+        .get_result(&mut con);
 
-    (
+    if created_player.is_err() {
+        return Err(StatusCode::INTERNAL_SERVER_ERROR);
+    }
+
+    let created_player = created_player.unwrap();
+
+    Ok((
         StatusCode::CREATED,
         Json(CreatedPlayer {
             id: created_player.id,
             name: created_player.name,
             generated_key: key,
         }),
-    )
+    ))
 }
 
 /*
@@ -67,7 +71,7 @@ pub async fn create_player(
 pub async fn display_player(
     Path(user_id): Path<i32>,
     State(state): State<Arc<ServerState>>,
-) -> Result<(StatusCode, Json<PlayerToDisplay>), StatusCode> {
+) -> Response<PlayerToDisplay> {
     use crate::schema::players::dsl::*;
 
     let mut con = get_connection(state.db_connections.clone())?;
@@ -100,7 +104,7 @@ pub async fn rename_player(
     State(state): State<Arc<ServerState>>,
     Path(user_id): Path<i32>,
     Json(body): Json<PlayerRename>,
-) -> Result<(StatusCode, Json<PlayerToDisplay>), StatusCode> {
+) -> Response<PlayerToDisplay> {
     use crate::schema::players::dsl::*;
 
     let mut con = get_connection(state.db_connections.clone())?;

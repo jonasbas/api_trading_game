@@ -1,5 +1,5 @@
-mod ship_cargo;
-mod ship_type;
+pub mod ship_cargo;
+pub mod ship_type;
 
 use std::time::SystemTime;
 
