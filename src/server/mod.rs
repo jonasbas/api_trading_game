@@ -8,7 +8,10 @@ use diesel::r2d2::Pool;
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use tokio::signal;
 
-use crate::server::{db_connections::get_connection, handlers::ship::list_ship_types};
+use crate::server::{
+    db_connections::get_connection,
+    handlers::{player::list_player_ships, ship::list_ship_types},
+};
 
 use self::{
     db_connections::create_connection_pool,
@@ -31,7 +34,8 @@ pub async fn start_server() {
     let user_routes = Router::new()
         .route("/create", post(create_player))
         .route("/:id", get(display_player))
-        .route("/:id/rename", post(rename_player));
+        .route("/:id/rename", post(rename_player))
+        .route("/:id/ships", get(list_player_ships));
 
     let app = Router::new()
         .route("/", get(|| async { "Hello world" }))

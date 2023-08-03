@@ -10,7 +10,10 @@ use rand::{distributions::Alphanumeric, Rng};
 use serde::Deserialize;
 
 use crate::{
-    models::player::{CreatedPlayer, Player, PlayerToCreate, PlayerToDisplay},
+    models::{
+        player::{CreatedPlayer, Player, PlayerToCreate, PlayerToDisplay},
+        ship::Ship,
+    },
     server::{db_connections::get_connection, state::ServerState},
 };
 
@@ -137,4 +140,27 @@ pub async fn rename_player(
     }
 
     Ok((StatusCode::OK, Json(update_result.unwrap())))
+}
+
+/*
+ * Handler to list all ships a player owns
+ * GET /player/:id/ships
+ * Returns List of Ships
+ */
+pub async fn list_player_ships(
+    State(state): State<Arc<ServerState>>,
+    Path(user_id): Path<i32>,
+) -> Response<Vec<Ship>> {
+    use crate::schema::ships::dsl::*;
+
+    let mut con = get_connection(state.db_connections.clone())?;
+
+    let all_ships: Result<Vec<Ship>, Error> =
+        ships.filter(owner_id.eq(user_id)).get_results(&mut con);
+
+    if all_ships.is_err() {
+        return Err(StatusCode::INTERNAL_SERVER_ERROR);
+    }
+
+    Ok((StatusCode::OK, Json(all_ships.unwrap())))
 }

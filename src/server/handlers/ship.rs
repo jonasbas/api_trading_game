@@ -15,6 +15,11 @@ use crate::{
 
 use super::Response;
 
+/*
+ * Handler to list all available ship types
+ * GET /ships
+ * Returns a list of ShipTypes
+ */
 pub async fn list_ship_types(State(state): State<Arc<ServerState>>) -> Response<Vec<ShipType>> {
     use crate::schema::ship_types::dsl::*;
     let mut con = get_connection(state.db_connections.clone())?;
