@@ -4,9 +4,11 @@ use axum::{
     routing::{get, post},
     Router,
 };
+use diesel::r2d2::Pool;
+use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use tokio::signal;
 
-use crate::server::handlers::ship::list_ship_types;
+use crate::server::{db_connections::get_connection, handlers::ship::list_ship_types};
 
 use self::{
     db_connections::create_connection_pool,
@@ -18,8 +20,11 @@ mod db_connections;
 mod handlers;
 mod state;
 
+const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
+
 pub async fn start_server() {
     let db_connections = create_connection_pool();
+    apply_migrations(db_connections.clone());
 
     let server_state = Arc::new(ServerState::new(db_connections));
 
@@ -40,6 +45,13 @@ pub async fn start_server() {
         .with_graceful_shutdown(shutdown_signal())
         .await
         .unwrap();
+}
+
+fn apply_migrations(db_connections: Pool<diesel::r2d2::ConnectionManager<diesel::PgConnection>>) {
+    get_connection(db_connections)
+        .expect("Error getting connection to apply migrations. Start aborted.")
+        .run_pending_migrations(MIGRATIONS)
+        .expect("Error applying migrations. Start aborted.");
 }
 
 async fn shutdown_signal() {
