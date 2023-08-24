@@ -10,7 +10,10 @@ use tokio::signal;
 
 use crate::server::{
     db_connections::get_connection,
-    handlers::{player::list_player_ships, ship::list_ship_types},
+    handlers::{
+        player::list_player_ships,
+        ship::{buy_ship_of_type, list_ship_types},
+    },
 };
 
 use self::{
@@ -22,6 +25,7 @@ use self::{
 mod db_connections;
 mod handlers;
 mod state;
+mod user_utils;
 
 const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
 
@@ -40,6 +44,7 @@ pub async fn start_server() {
     let app = Router::new()
         .route("/", get(|| async { "Hello world" }))
         .route("/ships", get(list_ship_types))
+        .route("/ship/:ship_type_id/buy", post(buy_ship_of_type))
         .nest("/player", user_routes)
         .with_state(server_state);
 

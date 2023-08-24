@@ -14,7 +14,10 @@ use crate::{
         player::{CreatedPlayer, Player, PlayerToCreate, PlayerToDisplay},
         ship::Ship,
     },
-    server::{db_connections::get_connection, state::ServerState},
+    server::{
+        db_connections::get_connection, state::ServerState,
+        user_utils::get_and_authorize_player_with_id,
+    },
 };
 
 use super::Response;
@@ -51,7 +54,10 @@ pub async fn create_player(
         .get_result(&mut con);
 
     if created_player.is_err() {
-        return Err(StatusCode::INTERNAL_SERVER_ERROR);
+        return Err((
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "Couldn't create new player".to_owned(),
+        ));
     }
 
     let created_player = created_player.unwrap();
@@ -85,16 +91,13 @@ pub async fn display_player(
         .first(&mut con);
 
     if player.is_err() {
-        return Err(StatusCode::NOT_FOUND);
+        return Err((
+            StatusCode::NOT_FOUND,
+            "No player with this id found".to_owned(),
+        ));
     }
 
     Ok((StatusCode::OK, Json(player.unwrap())))
-}
-
-#[derive(Debug, Deserialize)]
-pub struct PlayerRename {
-    name: String,
-    key: String,
 }
 
 /*
@@ -103,6 +106,12 @@ pub struct PlayerRename {
  * Requires player key in body
  * Returns PlayerToDisplay
  */
+#[derive(Debug, Deserialize)]
+pub struct PlayerRename {
+    name: String,
+    key: String,
+}
+
 pub async fn rename_player(
     State(state): State<Arc<ServerState>>,
     Path(user_id): Path<i32>,
@@ -112,20 +121,7 @@ pub async fn rename_player(
 
     let mut con = get_connection(state.db_connections.clone())?;
 
-    let player: Result<Player, Error> = players
-        .filter(id.eq(user_id))
-        .select(Player::as_select())
-        .first(&mut con);
-
-    if player.is_err() {
-        return Err(StatusCode::NOT_FOUND);
-    }
-
-    let mut player = player.unwrap();
-
-    if !player.key.as_str().eq(body.key.as_str()) {
-        return Err(StatusCode::UNAUTHORIZED);
-    }
+    let mut player = get_and_authorize_player_with_id(user_id, &mut con, body.key)?;
 
     player.name = body.name;
 
@@ -136,7 +132,10 @@ pub async fn rename_player(
         .get_result(&mut con);
 
     if update_result.is_err() {
-        return Err(StatusCode::INTERNAL_SERVER_ERROR);
+        return Err((
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "Error renaming player".to_owned(),
+        ));
     }
 
     Ok((StatusCode::OK, Json(update_result.unwrap())))
@@ -159,7 +158,10 @@ pub async fn list_player_ships(
         ships.filter(owner_id.eq(user_id)).get_results(&mut con);
 
     if all_ships.is_err() {
-        return Err(StatusCode::INTERNAL_SERVER_ERROR);
+        return Err((
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "Error displaying player ships".to_owned(),
+        ));
     }
 
     Ok((StatusCode::OK, Json(all_ships.unwrap())))

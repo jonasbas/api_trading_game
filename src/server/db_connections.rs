@@ -19,11 +19,14 @@ pub fn create_connection_pool() -> Pool<ConnectionManager<PgConnection>> {
 
 pub fn get_connection(
     pool: Pool<ConnectionManager<PgConnection>>,
-) -> Result<PooledConnection<ConnectionManager<PgConnection>>, StatusCode> {
+) -> Result<PooledConnection<ConnectionManager<PgConnection>>, (StatusCode, String)> {
     let connection = pool.get();
 
     if connection.is_err() {
-        return Err(StatusCode::INTERNAL_SERVER_ERROR);
+        return Err((
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "Couldn't create connection to database.".to_owned(),
+        ));
     }
 
     Ok(connection.unwrap())
