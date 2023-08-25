@@ -11,6 +11,7 @@ use tokio::signal;
 use crate::server::{
     db_connections::get_connection,
     handlers::{
+        cargo::list_cargo_infos,
         player::list_player_ships,
         ship::{buy_ship_of_type, list_ship_types},
     },
@@ -45,6 +46,7 @@ pub async fn start_server() {
         .route("/", get(|| async { "Hello world" }))
         .route("/ships", get(list_ship_types))
         .route("/ship/:ship_type_id/buy", post(buy_ship_of_type))
+        .route("/cargo", get(list_cargo_infos))
         .nest("/player", user_routes)
         .with_state(server_state);
 

@@ -1,5 +1,6 @@
 use axum::{http::StatusCode, Json};
 
+pub mod cargo;
 pub mod player;
 pub mod ship;
 

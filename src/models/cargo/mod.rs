@@ -1,2 +1,2 @@
-mod cargo_info;
-mod cargo_type;
+pub mod cargo_info;
+pub mod cargo_type;

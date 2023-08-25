@@ -6,8 +6,9 @@ use diesel::{
     serialize::{IsNull, ToSql},
     AsExpression, FromSqlRow,
 };
+use serde::Serialize;
 
-#[derive(Debug, AsExpression, FromSqlRow)]
+#[derive(Debug, AsExpression, FromSqlRow, Serialize)]
 #[diesel(sql_type = crate::schema::sql_types::Cargotype)]
 pub enum Cargotype {
     Wood,
