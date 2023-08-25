@@ -13,6 +13,7 @@ use crate::server::{
     handlers::{
         cargo::list_cargo_infos,
         player::list_player_ships,
+        port::list_all_ports,
         ship::{buy_ship_of_type, list_ship_types},
     },
 };
@@ -47,6 +48,7 @@ pub async fn start_server() {
         .route("/ships", get(list_ship_types))
         .route("/ship/:ship_type_id/buy", post(buy_ship_of_type))
         .route("/cargo", get(list_cargo_infos))
+        .route("/ports", get(list_all_ports))
         .nest("/player", user_routes)
         .with_state(server_state);
 

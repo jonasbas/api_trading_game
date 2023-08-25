@@ -1,10 +1,11 @@
 use diesel::prelude::*;
+use serde::Serialize;
 
 use crate::schema::ports;
 
-#[derive(Debug, Queryable, Insertable, Identifiable, AsChangeset)]
+#[derive(Debug, Queryable, Insertable, Identifiable, AsChangeset, Serialize)]
 #[diesel(table_name = ports)]
-struct Port {
+pub struct Port {
     id: i32,
     name: String,
     pos_x: i32,
